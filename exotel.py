@@ -11,7 +11,7 @@ from sklearn.neighbors import KNeighborsClassifier
 
 # i have no clue why this is required.. probably we'll remove this later
 
-print "Content-type: text/html"
+print "Content-type: text/plain"
 print ""
 
 # config for firebase
@@ -28,6 +28,7 @@ db = firebase.database()
 form = cgi.FieldStorage()
 number = form.getvalue('From')
 time = form.getvalue('CurrentTime')
+condition = form.getvalue('condition')
 
 # getting the state from number
 phone_number = "+91" + number
@@ -46,32 +47,15 @@ lat, lng = geocoder.google(resp_data['location']).latlng
 
 # creating the csv of present data
 calamitiesArray= [
-    'avalanche',
-    'avalanches',
-    'landslide',
-    'landslides',
-    'earthquake',
-    'earthquakes',
-    'sinkhole',
-    'sinkholes',
-    'hurricane',
-    'hurricanes',
-    'volcano',
-    'volcanoes',
-    'eruption',
-    'flood',
-    'floods',
-    'tsunami',
-    'tsunamis',
-    'blizzard',
+    'undefined',
     'cyclone',
-    'cyclones',
+    'earthquake',
+    'tsunami',
+    'hurricane',
+    'tornado',
+    'floods',
     'drought',
-    'thunderstorm',
-    'thunderstorms',
-    'hail',
-    'tornado'
-    'tornadoes'
+    'others'
 ]
 with open('coords.csv', 'w') as csvfile:
         fieldnames = ['lat', 'lng','calamity']
@@ -100,6 +84,9 @@ knn.fit(features, labels)
 # gives the calamity
 if knn.predict([lat,lng]).astype(int) != 0:
 	calamityName = calamitiesArray[knn.predict([lat,lng]).astype(int)]
+    	if condition:
+    		data = {"lat":lat, "lng":lng,"calamity":calamityName,"time":time,"number":number,"level":condition}
+    	else:
+    		data = {"lat":lat, "lng":lng,"calamity":calamityName,"time":time,"number":number}
 
-	data = {"lat":lat, "lng":lng,"calamity":calamityName,"time":time}
 	db.child("reports").push(data)

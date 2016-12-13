@@ -85,7 +85,7 @@ knn.fit(features, labels)
 if knn.predict([lat,lng]).astype(int) != 0:
 	calamityName = calamitiesArray[knn.predict([lat,lng]).astype(int)]
     	if condition:
-    		data = {"lat":lat, "lng":lng,"calamity":calamityName,"time":time,"number":number,"level":condition}
+    		data = {"lat":lat, "lng":lng,"calamity":calamityName,"time":time,"number":number,"level":int(condition)}
     	else:
     		data = {"lat":lat, "lng":lng,"calamity":calamityName,"time":time,"number":number}
 
